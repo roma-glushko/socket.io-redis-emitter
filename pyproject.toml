@@ -1,8 +1,16 @@
 [tool.poetry]
 name = "socket.io-redis-emitter"
 version = "0.0.1"
-description = ""
+description = "An asynchronous Redis-based Socket.IO emitter for Python"
 authors = ["Roman Glushko <roman.glushko.m@gmail.com>"]
+readme = "readme.md"
+repository = "https://github.com/roma-glushko/socket.io-redis-emitter"
+keywords = ["socket.io", "redis", "websocket", "emitter", "library"]
+
+classifiers = [
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
 license = "MIT"
 
 packages = [
