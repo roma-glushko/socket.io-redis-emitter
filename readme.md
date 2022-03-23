@@ -2,6 +2,14 @@
 
 This is an asynchronous Redis-based [Socket.IO emitter](https://socket.io/docs/v4/emitting-events/) for Python.
 
+## Installation
+
+```bash
+pip install socket.io-redis-emitter
+# or
+poetry add socket.io-redis-emitter
+```
+
 ## Features
 
 - High quality, typed and modern Python codebase

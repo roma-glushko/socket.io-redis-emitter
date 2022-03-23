@@ -4,7 +4,9 @@
 .idea
 .vs_code
 
+dist
 sandbox.py
 
  __pycache__
 .pytest_cache
+.mypy_cache

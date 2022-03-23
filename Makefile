@@ -15,3 +15,9 @@ lint: ## Lint the source code
 	@poetry run black $(PACKAGES)
 	@poetry run flake8 $(PACKAGES)
 	@poetry run mypy --pretty $(PACKAGES)
+
+test: ## Run the test suite
+	@poetry run pytest tests -v
+
+build: ## Pack the library into a distributable way
+	@poetry build
