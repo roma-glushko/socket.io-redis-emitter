@@ -1,6 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence
+from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence, Union
 
 from aioredis import Redis
 
@@ -9,8 +9,17 @@ from socketio_emitter.consts import (
     DEFAULT_CHANNEL_PREFIX,
     DEFAULT_EMITTER_ID,
     ROOT_NAMESPACE,
+    RequestTypes,
 )
-from socketio_emitter.entities import Message, MessageFlags, MessageOptions, Packet
+from socketio_emitter.entities import (
+    DisconnectRequest,
+    Message,
+    MessageFlags,
+    MessageOptions,
+    Packet,
+    RequestOptions,
+    RoomRequest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +96,7 @@ class Emitter:
         """
         Select specific rooms to broadcast
         Args:
-            *rooms: Rooms to select
+            *rooms (Sequence[str]): Rooms to select
         Returns:
             Self
         """
@@ -123,33 +132,110 @@ class Emitter:
             ),
         )
 
-        if self._rooms is ALL_ROOMS:
-            return await self._emit_message(message, namespace=str(self._namespace))
+        await self._emit_message(message)
 
-        for room in self._rooms:
-            await self._emit_message(
-                message,
-                namespace=str(self._namespace),
-                room=room,
+    async def join(self, *rooms: str) -> None:
+        """
+        Send a remote request to join the specified list of rooms for all clients that match namespace/room
+        Args:
+            *rooms (str): Rooms to Join
+        Returns:
+            None
+        """
+        request = RoomRequest(
+            type=RequestTypes.JOIN,
+            rooms=rooms,
+            options=RequestOptions(
+                rooms=self._rooms,
+                except_rooms=self._except_rooms,
+            ),
+        )
+
+        await self._emit_request(request)
+
+    async def leave(self, *rooms: str) -> None:
+        """
+        Send a remote request to leave the specified list of rooms for all clients that match namespace/room
+        Args:
+            *rooms: Rooms to Leave
+        Returns:
+            None
+        """
+        request = RoomRequest(
+            type=RequestTypes.LEAVE,
+            rooms=rooms,
+            options=RequestOptions(
+                rooms=self._rooms,
+                except_rooms=self._except_rooms,
+            ),
+        )
+
+        await self._emit_request(request)
+
+    async def disconnect(self, close: bool = False) -> None:
+        """
+        Send a remote request to disconnect for all clients that match namespace/room
+        Args:
+            close (bool): Whether to close the underlying connection
+        Returns:
+            None
+        """
+        request = DisconnectRequest(
+            type=RequestTypes.DISCONNECT,
+            close=close,
+            options=RequestOptions(
+                rooms=self._rooms,
+                except_rooms=self._except_rooms,
+            ),
+        )
+
+        await self._emit_request(request)
+
+    async def _emit_request(
+        self, request: Union[RoomRequest, DisconnectRequest]
+    ) -> None:
+        namespace: str = str(self._namespace)
+        rooms: Optional[Sequence[str]] = self._rooms
+
+        if rooms is ALL_ROOMS:
+            channel_name = self._get_request_channel(namespace)
+
+            return await self._publish_message(
+                channel_name, request.json(by_alias=True)
             )
 
-    async def _emit_message(
-        self, message: Message, *, namespace: str, room: Optional[str] = None
-    ) -> None:
+        for room in rooms:
+            channel_name = self._get_request_channel(namespace, room)
+
+            await self._publish_message(
+                channel_name,
+                request.json(by_alias=True),
+            )
+
+    async def _emit_message(self, message: Message) -> None:
         """
         Emit a new message to the selected namespace/room
         Args:
             message (Message): Full Emit Message corresponding to Socket.IO protocol
-            namespace (str): Namespace
-            room (str): Room Name
         Returns:
             None
         """
-        channel_name = self._get_emit_channel(namespace, room)
+        namespace: str = str(self._namespace)
+        rooms: Optional[Sequence[str]] = self._rooms
 
-        await self._publish_message(channel_name, message.raw())
+        if rooms is ALL_ROOMS:
+            channel_name = self._get_emit_channel(namespace)
 
-    async def _publish_message(self, channel_name: str, message: bytes) -> None:
+            return await self._publish_message(channel_name, message.raw())
+
+        for room in rooms:
+            channel_name = self._get_emit_channel(namespace, room)
+
+            await self._publish_message(channel_name, message.raw())
+
+    async def _publish_message(
+        self, channel_name: str, message: Union[bytes, str]
+    ) -> None:
         """
         Publish a raw message to the broker
         Args:

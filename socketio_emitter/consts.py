@@ -28,4 +28,6 @@ class PacketTypes(int, Enum):
 
 @unique
 class RequestTypes(int, Enum):
-    pass
+    JOIN = 2
+    LEAVE = 3
+    DISCONNECT = 4

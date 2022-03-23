@@ -1,9 +1,9 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import msgpack
 from pydantic import BaseModel, Field
 
-from socketio_emitter.consts import ROOT_NAMESPACE, PacketTypes
+from socketio_emitter.consts import ROOT_NAMESPACE, PacketTypes, RequestTypes
 
 EventName = str
 MessageData = Tuple[EventName, Dict[str, Any]]
@@ -62,3 +62,29 @@ class Message(BaseModel):
                 )
             )
         )
+
+
+class RequestOptions(BaseModel):
+    rooms: Optional[Sequence[str]] = None
+    except_rooms: Optional[Sequence[str]] = Field(None, alias="except")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class RoomRequest(BaseModel):
+    type: RequestTypes
+    rooms: Sequence[str]
+    options: RequestOptions = Field(..., alias="opts")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class DisconnectRequest(BaseModel):
+    type: RequestTypes = RequestTypes.DISCONNECT
+    close: bool
+    options: RequestOptions = Field(..., alias="opts")
+
+    class Config:
+        allow_population_by_field_name = True
