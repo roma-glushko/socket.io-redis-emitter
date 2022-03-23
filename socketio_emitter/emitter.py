@@ -83,7 +83,7 @@ class Emitter:
             self._except_rooms = previous_except_rooms
 
     @asynccontextmanager
-    async def rooms(self, *rooms: Sequence[str]) -> AsyncGenerator["Emitter", None]:
+    async def rooms(self, *rooms: str) -> AsyncGenerator["Emitter", None]:
         """
         Select specific rooms to broadcast
         Args:
