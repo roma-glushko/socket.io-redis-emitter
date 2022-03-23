@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "socket.io-redis-emitter"
-version = "0.0.1"
+version = "0.0.2"
 description = "An asynchronous Redis-based Socket.IO emitter for Python"
 authors = ["Roman Glushko <roman.glushko.m@gmail.com>"]
 readme = "readme.md"
