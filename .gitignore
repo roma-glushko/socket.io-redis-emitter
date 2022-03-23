@@ -1,0 +1,7 @@
+.venv
+*.pyc
+
+.idea
+.vs_code
+
+sandbox.py
