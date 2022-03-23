@@ -5,3 +5,6 @@
 .vs_code
 
 sandbox.py
+
+ __pycache__
+.pytest_cache

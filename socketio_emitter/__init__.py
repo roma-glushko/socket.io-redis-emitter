@@ -1,3 +1,3 @@
 from socketio_emitter.emitter import Emitter
 
-__all__ = ("Emitter", )
+__all__ = ("Emitter",)

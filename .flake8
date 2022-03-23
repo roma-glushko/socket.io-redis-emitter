@@ -1,0 +1,12 @@
+[flake8]
+ignore = 
+    E731,
+    W503
+exclude = 
+    .git,
+    __pycache__,
+    .github,
+    .pytest_cache,
+    .venv
+max-complexity = 10
+max-line-length = 120

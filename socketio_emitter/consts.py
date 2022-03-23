@@ -1,5 +1,5 @@
-from enum import unique, Enum
-from typing import FrozenSet, Final
+from enum import Enum, unique
+from typing import Final, FrozenSet
 
 ROOT_NAMESPACE: Final[str] = "/"
 
@@ -8,14 +8,16 @@ DEFAULT_CHANNEL_PREFIX: Final[str] = "socket.io"
 
 CHANNEL_SEPARATOR: Final[str] = "#"
 
-RESERVED_EVENTS: FrozenSet[str] = frozenset([
-    "connect",
-    "connect_error",
-    "disconnect",
-    "disconnecting",
-    "newListener",
-    "removeListener",
-])
+RESERVED_EVENTS: FrozenSet[str] = frozenset(
+    [
+        "connect",
+        "connect_error",
+        "disconnect",
+        "disconnecting",
+        "newListener",
+        "removeListener",
+    ]
+)
 
 
 @unique

@@ -1,11 +1,16 @@
 import logging
 from contextlib import asynccontextmanager
-from typing import Optional, Iterable, Sequence, Dict, Any, List
+from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence
 
 from aioredis import Redis
 
-from socketio_emitter.consts import DEFAULT_CHANNEL_PREFIX, DEFAULT_EMITTER_ID, ROOT_NAMESPACE, CHANNEL_SEPARATOR
-from socketio_emitter.entities import Message, Packet, MessageOptions, MessageFlags
+from socketio_emitter.consts import (
+    CHANNEL_SEPARATOR,
+    DEFAULT_CHANNEL_PREFIX,
+    DEFAULT_EMITTER_ID,
+    ROOT_NAMESPACE,
+)
+from socketio_emitter.entities import Message, MessageFlags, MessageOptions, Packet
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +42,9 @@ class Emitter:
         self._except_rooms: Optional[Sequence[str]] = None
 
     @asynccontextmanager
-    async def namespace(self, name: str = ROOT_NAMESPACE) -> Iterable["Emitter"]:
+    async def namespace(
+        self, name: str = ROOT_NAMESPACE
+    ) -> AsyncGenerator["Emitter", None]:
         """
         Select a namespace to braodcast
         Args:
@@ -53,7 +60,9 @@ class Emitter:
             self._namespace = previous_namespace
 
     @asynccontextmanager
-    async def all_rooms(self, *, except_: Optional[Sequence[str]] = None) -> Iterable["Emitter"]:
+    async def all_rooms(
+        self, *, except_: Optional[Sequence[str]] = None
+    ) -> AsyncGenerator["Emitter", None]:
         """
         Select all rooms in the specified namespace
         Args:
@@ -74,7 +83,7 @@ class Emitter:
             self._except_rooms = previous_except_rooms
 
     @asynccontextmanager
-    async def rooms(self, *rooms: Sequence[str]) -> Iterable["Emitter"]:
+    async def rooms(self, *rooms: Sequence[str]) -> AsyncGenerator["Emitter", None]:
         """
         Select specific rooms to broadcast
         Args:
@@ -115,16 +124,18 @@ class Emitter:
         )
 
         if self._rooms is ALL_ROOMS:
-            return await self._emit_message(message, namespace=self._namespace)
+            return await self._emit_message(message, namespace=str(self._namespace))
 
         for room in self._rooms:
             await self._emit_message(
                 message,
-                namespace=self._namespace,
+                namespace=str(self._namespace),
                 room=room,
             )
 
-    async def _emit_message(self, message: Message, *, namespace: str, room: Optional[str] = None) -> None:
+    async def _emit_message(
+        self, message: Message, *, namespace: str, room: Optional[str] = None
+    ) -> None:
         """
         Emit a new message to the selected namespace/room
         Args:

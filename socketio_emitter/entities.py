@@ -1,8 +1,7 @@
-from pydantic import BaseModel, Field
-
-from typing import Tuple, Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import msgpack
+from pydantic import BaseModel, Field
 
 from socketio_emitter.consts import ROOT_NAMESPACE, PacketTypes
 
@@ -20,6 +19,7 @@ class MessageFlags(BaseModel):
     Compress:
         Sets the compress flag.
     """
+
     volatile: bool = False
     compress: bool = False
 
@@ -53,10 +53,12 @@ class Message(BaseModel):
         Returns:
             Raw/Serialized Socket.IO emit message
         """
-        return msgpack.packb(
-            (
-                self.emitter_id,
-                self.packet.dict(by_alias=True),
-                self.options.dict(by_alias=True),
+        return bytes(
+            msgpack.packb(
+                (
+                    self.emitter_id,
+                    self.packet.dict(by_alias=True),
+                    self.options.dict(by_alias=True),
+                )
             )
         )
