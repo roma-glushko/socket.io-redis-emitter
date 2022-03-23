@@ -6,6 +6,7 @@ This is an asynchronous Redis-based [Socket.IO emitter](https://socket.io/docs/v
 
 - High quality, typed and modern Python codebase
 - Clean, concise and Pythonic API
+- Uses [aioredis](https://aioredis.readthedocs.io/en/latest/) as a Redis client
 - Supports namespaces, rooms and regular Socket.IO message emitting
 
 ```python
