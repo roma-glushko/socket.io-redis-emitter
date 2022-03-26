@@ -10,6 +10,12 @@ PACKAGES?=socketio_emitter tests
 install: ## Install the project
 	@poetry install
 
+test-lint: ## Run lints in the check mode (useful for CI)
+	@poetry run isort $(PACKAGES) -c
+	@poetry run black --check $(PACKAGES)
+	@poetry run flake8 $(PACKAGES)
+	@poetry run mypy --pretty $(PACKAGES)
+
 lint: ## Lint the source code
 	@poetry run isort $(PACKAGES)
 	@poetry run black $(PACKAGES)
