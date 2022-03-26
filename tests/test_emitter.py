@@ -1,6 +1,6 @@
-from typing import Dict, Any, Union
+from typing import Any, Dict
 
-from socketio_emitter import Message, Packet, MessageOptions, MessageFlags, PacketTypes
+from socketio_emitter import Message, MessageFlags, MessageOptions, Packet, PacketTypes
 from tests.conftest import decode_message
 
 
@@ -19,7 +19,7 @@ def test_socketio_protocol() -> None:
             flags=MessageFlags(volatile=True),
             rooms=[room],
             except_rooms=[exc_room],
-        )
+        ),
     )
 
     raw_message = decode_message(message.raw())
@@ -35,16 +35,17 @@ def test_socketio_protocol() -> None:
     assert rcv_packet.get("nsp") == namespace
     assert rcv_packet.get("type") == PacketTypes.REGULAR
 
-    rcv_packet = rcv_packet.get("data")
+    rcv_message_data = rcv_packet.get("data", ("", {}))
 
-    assert isinstance(rcv_packet, list)
-    assert len(rcv_packet) == 2
+    assert isinstance(rcv_message_data, list)
+    assert len(rcv_message_data) == 2
 
-    rcv_event, rcv_data = rcv_packet
+    rcv_event: str
+    rcv_data: Dict[str, Any]
+    rcv_event, rcv_data = rcv_message_data
 
     assert rcv_event == event
     assert rcv_data == data
 
     assert isinstance(rcv_options, dict)
     assert set(rcv_options.keys()) == {"flags", "rooms", "except"}
-

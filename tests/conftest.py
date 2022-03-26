@@ -1,7 +1,9 @@
-from typing import Dict, Any, Tuple
+from typing import Any, Dict, Tuple, cast
 
 import msgpack
 
+RawProtocol = Tuple[str, Dict[str, Any], Dict[str, Any]]
 
-def decode_message(message: bytes) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
-    return msgpack.unpackb(message)
+
+def decode_message(message: bytes) -> RawProtocol:
+    return cast(RawProtocol, msgpack.unpackb(message))
