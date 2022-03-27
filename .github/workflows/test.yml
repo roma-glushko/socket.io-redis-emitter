@@ -35,17 +35,18 @@ jobs:
       run: |
         make test
 
-    - name: Generate Coverage fail if it's <80%.
+    - name: Generate Test Coverage
       run: |
           make coverage
           poetry run coverage html --skip-covered --skip-empty
+
+    - name: Fail If Coverage is Less Than 80%
+      run: poetry run coverage report --fail-under=80
 
     - name: Upload HTML report if check failed.
       uses: actions/upload-artifact@v2
       with:
           name: html-report
           path: htmlcov
-      if: ${{ failure() }}
 
-#    - name: Fail If Coverage is Less Than 80%
-#      run: poetry run coverage report --fail-under=80
+      if: ${{ failure() }}
