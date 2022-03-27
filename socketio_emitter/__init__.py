@@ -1,3 +1,4 @@
+from socketio_emitter.consts import DEFAULT_CHANNEL_PREFIX
 from socketio_emitter.emitter import Emitter
 from socketio_emitter.entities import (
     Message,
@@ -14,4 +15,5 @@ __all__ = (
     "Message",
     "MessageFlags",
     "MessageOptions",
+    "DEFAULT_CHANNEL_PREFIX",
 )

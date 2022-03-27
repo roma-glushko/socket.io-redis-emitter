@@ -47,6 +47,16 @@ class Message(BaseModel):
     packet: Packet
     options: MessageOptions
 
+    @classmethod
+    def from_raw(
+        cls, emitter_id: str, packet: Dict[str, Any], options: Dict[str, Any]
+    ) -> "Message":
+        return cls(
+            emitter_id=emitter_id,
+            packet=Packet(**packet),
+            options=MessageOptions(**options),
+        )
+
     def raw(self) -> bytes:
         """
         Generates a serialized version of a Socket.IO emit message
