@@ -47,5 +47,5 @@ jobs:
           path: htmlcov
       if: ${{ failure() }}
 
-    - name: Fail If Coverage is Less Than 80%
-      run: poetry run coverage report --fail-under=80
+#    - name: Fail If Coverage is Less Than 80%
+#      run: poetry run coverage report --fail-under=80
