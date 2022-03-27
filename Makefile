@@ -25,5 +25,8 @@ lint: ## Lint the source code
 test: ## Run the test suite
 	@poetry run pytest tests -v
 
+coverage:  ## Generate Test Coverage
+	@poetry run coverage run -m pytest tests
+
 build: ## Pack the library into a distributable way
 	@poetry build

@@ -24,8 +24,8 @@ from socketio_emitter import Emitter
 client = Redis(...)
 emitter = Emitter(client=client)
 
-with emitter.namespace("/nsp") as nsp:
-    with nsp.rooms("room1", "room2") as clients:
+async with emitter.namespace("/nsp") as nsp:
+    async with nsp.rooms("room1", "room2") as clients:
         await clients.emit("machineStatus", {"status": "ok"})
 ```
 
@@ -38,8 +38,8 @@ from socketio_emitter import Emitter
 client = Redis(...)
 emitter = Emitter(client=client)
 
-with emitter.namespace("/nsp") as nsp:
-    with nsp.rooms("room1", "room2") as clients:
+async with emitter.namespace("/nsp") as nsp:
+    async with nsp.rooms("room1", "room2") as clients:
         await clients.join("room3")
         # await clients.leave("room3")
         # await clients.disconnect()
