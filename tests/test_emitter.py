@@ -87,6 +87,13 @@ class TestEmitter:
 
         return Emitter(redis_mock, emitter_id=emitter_id), redis_mock
 
+    @staticmethod
+    def _get_message_from_mock(redis_mock: AsyncMock) -> Tuple[str, Message]:
+        (channel_name, decoded_message), _ = list(redis_mock.publish.await_args)
+        message: Message = Message.from_raw(*decode_message(decoded_message))
+
+        return channel_name, message
+
     async def test_event_emitting(
         self, emitter_id: str, event: str, event_data: Dict[str, Any], namespace: str
     ) -> None:
@@ -100,9 +107,7 @@ class TestEmitter:
                     data=event_data,
                 )
 
-        (channel_name, decoded_message), _ = list(redis_mock.publish.await_args)
-
-        rcv_message: Message = Message.from_raw(*decode_message(decoded_message))
+        channel_name, rcv_message = self._get_message_from_mock(redis_mock)
 
         assert DEFAULT_CHANNEL_PREFIX in channel_name, channel_name
         assert namespace in channel_name, channel_name
@@ -119,4 +124,52 @@ class TestEmitter:
         assert rcv_message_data == event_data
 
         assert rcv_message.options.rooms == [room]
-        assert rcv_message.options.flags.volatile is False
+
+    async def test_emitting_to_all_rooms(
+        self, emitter_id: str, namespace: str, event: str, event_data: Dict[str, Any]
+    ) -> None:
+        emitter, redis_mock = self._get_emitter(emitter_id)
+
+        async with emitter.namespace(namespace) as nsp:
+            async with nsp.all_rooms():
+                await emitter.emit(
+                    event=event,
+                    data=event_data,
+                )
+
+        _, rcv_message = self._get_message_from_mock(redis_mock)
+
+        assert rcv_message.packet.namespace == namespace
+        assert rcv_message.options.rooms is None
+
+    async def test_emitting_to_several_namespaces(
+        self, emitter_id: str, event: str, event_data: Dict[str, Any]
+    ) -> None:
+        emitter, redis_mock = self._get_emitter(emitter_id)
+
+        workspace_namespace: str = "/workspaces"
+        org_namespace: str = "/organizations"
+
+        async with emitter.namespace(workspace_namespace) as workspace_nsp:
+            async with workspace_nsp.all_rooms():
+                await emitter.emit(
+                    event=event,
+                    data=event_data,
+                )
+
+        channel_name, rcv_message = self._get_message_from_mock(redis_mock)
+
+        assert workspace_namespace in channel_name
+        assert rcv_message.packet.namespace == workspace_namespace
+
+        async with emitter.namespace(org_namespace) as org_nsp:
+            async with org_nsp.all_rooms():
+                await emitter.emit(
+                    event=event,
+                    data=event_data,
+                )
+
+        channel_name, rcv_message = self._get_message_from_mock(redis_mock)
+
+        assert org_namespace in channel_name
+        assert rcv_message.packet.namespace == org_namespace
