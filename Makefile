@@ -28,5 +28,13 @@ test: ## Run the test suite
 coverage:  ## Generate Test Coverage
 	@poetry run coverage run -m pytest tests
 
+coverage-report: ## Generate Coverage Report
+	@poetry run coverage html
+
 build: ## Pack the library into a distributable way
 	@poetry build
+
+clean: ## Clean project
+	@rm -rf .mypy_cache
+	@rm -rf .pytest_cache
+	@rm -rf .coverage htmlcov
