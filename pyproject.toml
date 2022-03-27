@@ -19,17 +19,18 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-aioredis = "^2.0.1"
-msgpack = "^1.0.3"
-pydantic = "^1.9.0"
+aioredis = "2.0.1"
+msgpack = "1.0.3"
+pydantic = "1.9.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "7.1.1"
-isort = "^5.10.1"
-black = "^22.1.0"
-flake8 = "^4.0.1"
-mypy = "^0.941"
-pytest-asyncio = "^0.18.2"
+isort = "5.10.1"
+black = "22.1.0"
+flake8 = "4.0.1"
+mypy = "0.941"
+pytest-asyncio = "0.18.2"
+coverage = "6.3.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
