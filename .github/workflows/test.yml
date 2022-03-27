@@ -38,7 +38,7 @@ jobs:
     - name: Generate Coverage fail if it's <80%.
       run: |
           make coverage
-          python -m coverage html --skip-covered --skip-empty
+          poetry run coverage html --skip-covered --skip-empty
 
     - name: Upload HTML report if check failed.
       uses: actions/upload-artifact@v2
@@ -48,4 +48,4 @@ jobs:
       if: ${{ failure() }}
 
     - name: Fail If Coverage is Less Than 80%
-      run: python -m coverage report --fail-under=80
+      run: poetry run coverage report --fail-under=80
