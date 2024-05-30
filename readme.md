@@ -14,14 +14,14 @@ poetry add socket.io-redis-emitter
 
 - High quality, typed and modern Python codebase
 - Clean, concise and Pythonic API
-- Uses [aioredis](https://aioredis.readthedocs.io/en/latest/) as a Redis client
+- Uses [hiredis](https://aioredis.readthedocs.io/en/latest/) as a Redis client
 - Supports namespaces, rooms and regular Socket.IO message emitting
 
 ```python
-from aioredis import Redis
+import redis
 from socketio_emitter import Emitter
 
-client = Redis(...)
+client = redis.Redis(...)
 emitter = Emitter(client=client)
 
 async with emitter.namespace("/nsp") as nsp:
@@ -29,13 +29,13 @@ async with emitter.namespace("/nsp") as nsp:
         await clients.emit("machineStatus", {"status": "ok"})
 ```
 
-- Remote requests to join, leave rooms or to disconnect 
+- Remote requests to join, leave rooms or to disconnect
 
 ```python
-from aioredis import Redis
+import redis
 from socketio_emitter import Emitter
 
-client = Redis(...)
+client = redis.Redis(...)
 emitter = Emitter(client=client)
 
 async with emitter.namespace("/nsp") as nsp:
