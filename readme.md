@@ -14,7 +14,7 @@ poetry add socket.io-redis-emitter
 
 - High quality, typed and modern Python codebase
 - Clean, concise and Pythonic API
-- Uses [hiredis](https://aioredis.readthedocs.io/en/latest/) as a Redis client
+- Uses [redis](https://redis.readthedocs.io/en/latest/) as a Redis client
 - Supports namespaces, rooms and regular Socket.IO message emitting
 
 ```python
