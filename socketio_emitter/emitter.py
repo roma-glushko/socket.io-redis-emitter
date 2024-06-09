@@ -2,7 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence, Union
 
-from aioredis import Redis
+import redis
 
 from socketio_emitter.consts import (
     CHANNEL_SEPARATOR,
@@ -29,7 +29,7 @@ ALL_ROOMS = None
 class Emitter:
     def __init__(
         self,
-        client: "Redis",
+        client: redis.Redis,
         *,
         channel_prefix: str = DEFAULT_CHANNEL_PREFIX,
         emitter_id: str = DEFAULT_EMITTER_ID,
@@ -55,7 +55,7 @@ class Emitter:
         self, name: str = ROOT_NAMESPACE
     ) -> AsyncGenerator["Emitter", None]:
         """
-        Select a namespace to braodcast
+        Select a namespace to broadcast
         Args:
             name (str): Namespace Name
         Returns:

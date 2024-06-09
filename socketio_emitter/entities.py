@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import msgpack
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from socketio_emitter.consts import ROOT_NAMESPACE, PacketTypes, RequestTypes
 
@@ -29,8 +29,7 @@ class MessageOptions(BaseModel):
     flags: Optional[MessageFlags] = None
     except_rooms: Optional[List[str]] = Field(None, alias="except")
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class Packet(BaseModel):
@@ -38,8 +37,7 @@ class Packet(BaseModel):
     type: PacketTypes = PacketTypes.REGULAR
     namespace: str = Field(ROOT_NAMESPACE, alias="nsp")
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class Message(BaseModel):
@@ -67,8 +65,8 @@ class Message(BaseModel):
             msgpack.packb(
                 (
                     self.emitter_id,
-                    self.packet.dict(by_alias=True),
-                    self.options.dict(by_alias=True),
+                    self.packet.model_dump(by_alias=True),
+                    self.options.model_dump(by_alias=True),
                 )
             )
         )
@@ -78,8 +76,7 @@ class RequestOptions(BaseModel):
     rooms: Optional[Sequence[str]] = None
     except_rooms: Optional[Sequence[str]] = Field(None, alias="except")
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class RoomRequest(BaseModel):
@@ -87,8 +84,7 @@ class RoomRequest(BaseModel):
     rooms: Sequence[str]
     options: RequestOptions = Field(..., alias="opts")
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class DisconnectRequest(BaseModel):
@@ -96,5 +92,4 @@ class DisconnectRequest(BaseModel):
     close: bool
     options: RequestOptions = Field(..., alias="opts")
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
